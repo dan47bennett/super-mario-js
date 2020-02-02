@@ -9,8 +9,10 @@ const context = canvas.getContext('2d');
 
 function createSpriteLayer(sprite, position) {
     return function drawSpriteLayer(context) {
-        sprite.draw('idle', context, position.x, position.y);
-    }
+        for(let i = 0; i < 20; ++i){
+            sprite.draw('idle', context, position.x + i * 16, position.y);
+        }
+    };
 }
 
 
@@ -19,16 +21,16 @@ Promise.all([
     loadBackgroundSprites(),
     loadLevel('1-1')
 ])
-.then(([marioSprite, sprites, level]) => {
+.then(([marioSprite, backgroundSprites, level]) => {
     const comp = new Compositor();
 
 
-    const backgroundLayer = createBackgroundLayer(level.backgrounds, sprites);
+    const backgroundLayer = createBackgroundLayer(level.backgrounds, backgroundSprites);
     comp.layers.push(backgroundLayer);
 
     const position = {
-        x: 64,
-        y: 64
+        x: 0,
+        y: 0
     }
 
     const spriteLayer = createSpriteLayer(marioSprite, position);
