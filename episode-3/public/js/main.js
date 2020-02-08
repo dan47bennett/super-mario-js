@@ -7,17 +7,29 @@ const canvas = document.getElementById('screen');
 const context = canvas.getContext('2d');
 
 
-function createSpriteLayer(sprite, position) {
+function createSpriteLayer(entity) {
     return function drawSpriteLayer(context) {
-        sprite.draw('idle', context, position.x, position.y);
+        entity.draw(context);
     };
 }
 
 
 class Vector {
     constructor(x, y) {
+        this.set(x, y)
+    }
+
+    set(x, y) {
         this.x = x;
         this.y = y;
+    }
+}
+
+class Entity {
+    constructor() {
+        this.position = new Vector(0,0)
+        this.velocity = new Vector(0,0)
+
     }
 }
 
@@ -37,17 +49,28 @@ Promise.all([
 
     const gravity = 0.5
 
-    const position = new Vector(64,180);
-    const velocity = new Vector(2,-10);
+    const mario = new Entity();
+    mario.position.set(64, 180);
+    mario.velocity.set(2, -10);
 
-    const spriteLayer = createSpriteLayer(marioSprite, position);
+    mario.draw = function drawMario(context) {
+        marioSprite.draw('idle', context, this.position.x, this.position.y);
+    }
+
+
+    mario.update = function updateMario() {
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+    }
+
+
+    const spriteLayer = createSpriteLayer(mario);
     comp.layers.push(spriteLayer)
 
     function update() {
         comp.draw(context);
-        position.x += velocity.x;
-        position.y += velocity.y;
-        velocity.y += gravity
+        mario.update()
+        mario.velocity.y += gravity
         requestAnimationFrame(update)
     }
     update()
